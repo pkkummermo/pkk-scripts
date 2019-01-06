@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "target": "es2018",
+    "module": "commonjs",
+    "strict": true,
+    "noUnusedLocals": true,
+    "esModuleInterop": true,
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+  ]
+}
