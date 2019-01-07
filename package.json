@@ -1,5 +1,5 @@
 {
-  "name": "pkk-scripts",
+  "name": "@pkkummermo/pkk-scripts",
   "version": "0.1.0",
   "description": "Boostrapper for projects",
   "main": "dist/index.js",
@@ -10,12 +10,12 @@
     "dist"
   ],
   "scripts": {
+    "prepublish": "npm start build",
     "prebuild": "rimraf dist",
     "build": "tsc && cp -r scripts/linters/configs dist/scripts/linters/.",
     "start": "ts-node index.ts --",
     "test": "npm run test:lint",
-    "test:lint": "ts-node index.ts lint",
-    "test:tslint": "tslint <your sources>"
+    "test:lint": "ts-node index.ts lint"
   },
   "author": "Per Kristian Kummermo",
   "license": "Apache-2.0",
