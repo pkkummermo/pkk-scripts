@@ -22,7 +22,7 @@ commander
 commander
     .command("lint")
     .alias("l")
-    .description("Lints project files. For TSLint you need a TSLint configuration file.")
+    .description("Lints project files.")
     .option("-f, --fix", "Fix lint errors")
     .allowUnknownOption()
     .action(async () => {
