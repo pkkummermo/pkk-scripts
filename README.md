@@ -9,6 +9,12 @@ A package for bootstrapping and simplifying startup of private projects
 ## Why
 Highly inspired by Kent C. Dodds [kcd-scripts](https://github.com/kentcdodds/kcd-scripts) and [his article](https://blog.kentcdodds.com/automation-without-config-412ab5e47229) I created pkk-scripts. It's meant to simplify creating new projects and standardize tooling versions and help keep everything up to date. 
 
+## Install
+
+```
+npm i -D @pkkummermo/pkk-scripts
+```
+
 ## Usage
 
 ```bash
@@ -27,7 +33,23 @@ Commands:
   lint|l [options]  Lints project files. For TSLint you need a TSLint configuration file.
   server|s          Starts development server
   build|b           Builds current project
-  ``` 
+  ```
+
+  Add configurations according to your needs in package.json.
+
+  Ex (in `package.json` script attribute):
+  ```json
+  {
+      "scripts": {
+          "build": "pkk-scripts b",
+          "start": "pkk-scripts s",
+          "test:unit": "pkk-scripts t",
+          "test:lint": "pkk-scripts l"
+      }
+  }
+  ```
+
+  These will trigger `pkk-scripts` which will in turn automatically detect project configurations and run the according action.
 
 ## Configuration
 
