@@ -22,7 +22,7 @@ const lintTypeScript = async (args: string[]) => {
         { stdio: "inherit" },
     ));
     if (exitCode !== 0) {
-        throw new Error("There were lint errors");
+        throw new Error(`There were lint errors. Exit code: ${exitCode}`);
     }
 };
 
@@ -30,6 +30,22 @@ const lintJavaScript = async (args: string[]) => {
     const hasESLintConfig = hasOneOfFiles(ES_LINT_VARS.CONFIG_FILES);
     const esLintConfig = hasESLintConfig ? [] : ES_LINT_VARS.FALLBACK_CONFIG;
 
+    /**
+     * If there is no config there's a couple of assumptions we make. The user either:
+     *
+     * 1. Has no JavaScript files in the project. We therefore glob search the default pattern and simply
+     * returns if no files could be found.
+     *
+     * 2. The user wants to just use the default configuration bundled with pkk-scripts
+     *
+     * If we do not check the glob pattern, and there's no files, ESLint fails with exit code 2 which
+     * doesn't really feel right and keeps us from linting everything by default.
+     *
+     * Ref: https://github.com/eslint/eslint/issues/10587
+     * Ref: https://github.com/eslint/eslint/issues/9977
+     *
+     * TODO: Use ESLint CLIEngine to bypass issue
+     */
     if (!hasESLintConfig) {
         const globRes = await globPromise(ES_LINT_VARS.DEFAULT_ARGS[0], { ignore: ["node_modules/**/*"] });
         if (globRes.length === 0) {
@@ -40,14 +56,18 @@ const lintJavaScript = async (args: string[]) => {
     LOG("Chosen eslintconfig", esLintConfig);
     LOG("Running ESLint with", [...ES_LINT_VARS.DEFAULT_ARGS, ...esLintConfig, ...args]);
 
-    const exitCode = await spawnProcessPromise(spawn(
+    await spawnProcessPromise(spawn(
         resolveBin("eslint"),
         [...ES_LINT_VARS.DEFAULT_ARGS, ...esLintConfig, ...args],
         { stdio: "inherit" },
-    ));
-    if (exitCode !== 0) {
-        throw new Error("There were lint errors");
-    }
+    )).then((res) => {
+        if (res === ES_LINT_VARS.RETURN_CODES.GENERIC_ERROR_V5) {
+            throw new Error("Something went wrong when trying to lint your files");
+        }
+        if (res === ES_LINT_VARS.RETURN_CODES.LINT_ERROR_V5) {
+            throw new Error("Found lint errors");
+        }
+    });
 };
 
 export const lintScript = async (args: string[] = []) => {
@@ -68,7 +88,7 @@ export const lintScript = async (args: string[] = []) => {
         await lintJavaScript(args);
         spinner.succeed();
     } catch (error) {
-        spinner.text = `Error when running ESLint:\n${error}`;
+        spinner.text = `ESLint:\n${error}`;
         spinner.fail();
     }
 
