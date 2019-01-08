@@ -5,7 +5,7 @@ import util from "util";
 
 const globPromise = util.promisify(glob);
 
-import { hasOneOfFiles, LOG, resolveBin, spawnProcessPromise } from "../util";
+import { hasOneOfFiles, hasPackageProperty, LOG, resolveBin, spawnProcessPromise } from "../util";
 import { ES_LINT_VARS } from "./linters/eslint";
 import { TS_LINT_VARS } from "./linters/tslint";
 
@@ -27,7 +27,9 @@ const lintTypeScript = async (args: string[]) => {
 };
 
 const lintJavaScript = async (args: string[]) => {
-    const hasESLintConfig = hasOneOfFiles(ES_LINT_VARS.CONFIG_FILES);
+    const hasESLintConfig = hasOneOfFiles(ES_LINT_VARS.CONFIG_FILES) ||
+        hasPackageProperty(ES_LINT_VARS.PACKAGE_CONFIG_PROP) ||
+        hasPackageProperty("eslintIgnore");
     const esLintConfig = hasESLintConfig ? [] : ES_LINT_VARS.FALLBACK_CONFIG;
 
     /**
