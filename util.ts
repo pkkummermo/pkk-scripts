@@ -59,7 +59,6 @@ const hasFile = (fileName: string) => {
 
 const hasOneOfFiles = (fileNames: string[]) => {
     return fileNames.some((fileName) => {
-        // console.debug(`Has file ${fileName}`, hasFile(fileName));
         return hasFile(fileName);
     });
 };
