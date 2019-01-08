@@ -30,7 +30,7 @@ Options:
 
 Commands:
   test|t            Runs project tests
-  lint|l [options]  Lints project files. For TSLint you need a TSLint configuration file.
+  lint|l [options]  Lints project files.
   server|s          Starts development server
   build|b           Builds current project
   ```
