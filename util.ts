@@ -63,11 +63,18 @@ const hasOneOfFiles = (fileNames: string[]) => {
     });
 };
 
+const LOG = (...messages: Array<string | object>): void => {
+    if (process.env.DEBUG) {
+        console.log(messages);
+    }
+};
+
 export {
     appDirectory,
     fromRoot,
     hasFile,
     hasOneOfFiles,
+    LOG,
     resolveBin,
     resolvePKKScripts,
     spawnProcessPromise,

@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
 import commander from "commander";
+import { LOG } from "./util";
 
-// console.debug("Process args", process.argv);
+LOG("Process args", process.argv);
 const commandArgs = process.argv.slice(3);
 
 commander

@@ -5,7 +5,7 @@ import util from "util";
 
 const globPromise = util.promisify(glob);
 
-import { hasOneOfFiles, resolveBin, spawnProcessPromise } from "../util";
+import { hasOneOfFiles, LOG, resolveBin, spawnProcessPromise } from "../util";
 import { ES_LINT_VARS } from "./linters/eslint";
 import { TS_LINT_VARS } from "./linters/tslint";
 
@@ -13,8 +13,8 @@ const lintTypeScript = async (args: string[]) => {
     const hasTSLintConfig = hasOneOfFiles(TS_LINT_VARS.CONFIG_FILES);
     const tsLintConfig = hasTSLintConfig ? [] : TS_LINT_VARS.FALLBACK_CONFIG;
 
-    console.debug("Chosen tslintconfig", tsLintConfig);
-    console.debug("Running TSLint with", [...TS_LINT_VARS.DEFAULT_ARGS, ...tsLintConfig, ...args]);
+    LOG("Chosen tslintconfig", hasTSLintConfig ? "Using project local" : tsLintConfig);
+    LOG("Running TSLint with", [...TS_LINT_VARS.DEFAULT_ARGS, ...tsLintConfig, ...args]);
 
     const exitCode = await spawnProcessPromise(spawn(
         resolveBin("tslint"),
@@ -36,8 +36,9 @@ const lintJavaScript = async (args: string[]) => {
             return;
         }
     }
-    console.debug("Chosen tslintconfig", esLintConfig);
-    console.debug("Running ESLint with", [...ES_LINT_VARS.DEFAULT_ARGS, ...esLintConfig, ...args]);
+
+    LOG("Chosen eslintconfig", esLintConfig);
+    LOG("Running ESLint with", [...ES_LINT_VARS.DEFAULT_ARGS, ...esLintConfig, ...args]);
 
     const exitCode = await spawnProcessPromise(spawn(
         resolveBin("eslint"),
@@ -50,7 +51,7 @@ const lintJavaScript = async (args: string[]) => {
 };
 
 export const lintScript = async (args: string[] = []) => {
-    console.debug("Called lintScript with args", args);
+    LOG("Called lintScript with args", args);
     const spinner = ora();
 
     spinner.start("Linting TS");
