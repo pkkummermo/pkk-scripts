@@ -63,6 +63,14 @@ const hasOneOfFiles = (fileNames: string[]) => {
     });
 };
 
+const getPackage = (): object => {
+    return pkg;
+};
+
+const hasPackageProperty = (attribute: string): boolean => {
+    return Object.keys(pkg).includes(attribute);
+};
+
 const LOG = (...messages: Array<string | object>): void => {
     if (process.env.DEBUG) {
         console.log(messages);
@@ -72,8 +80,10 @@ const LOG = (...messages: Array<string | object>): void => {
 export {
     appDirectory,
     fromRoot,
+    getPackage,
     hasFile,
     hasOneOfFiles,
+    hasPackageProperty,
     LOG,
     resolveBin,
     resolvePKKScripts,
