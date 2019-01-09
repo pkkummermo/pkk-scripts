@@ -1,7 +1,7 @@
 import { ChildProcess } from "child_process";
 import fs from "fs";
 import path from "path";
-import readPkgUp from "read-pkg-up";
+import readPkgUp, { Package } from "read-pkg-up";
 import which from "which";
 
 const { pkg, path: pkgPath } = readPkgUp.sync({
@@ -10,6 +10,9 @@ const { pkg, path: pkgPath } = readPkgUp.sync({
 
 const appDirectory = path.dirname(pkgPath);
 
+/**
+ * Resolves pkk-scripts bin
+ */
 function resolvePKKScripts() {
     if (pkg.name === "pkk-scripts") {
         return require.resolve("./").replace(process.cwd(), ".");
@@ -17,10 +20,19 @@ function resolvePKKScripts() {
     return resolveBin("pkk-scripts");
 }
 
+/**
+ * Join root path with given path
+ * @param pathToRelativeToRoot Path to join with root path
+ */
 const fromRoot = (pathToRelativeToRoot: string) => {
     return path.join(appDirectory, pathToRelativeToRoot);
 };
 
+/**
+ * Resolves bin in the module name given
+ * @param moduleName Name of module
+ * @param param1 Optional extended configuration of module
+ */
 const resolveBin = (moduleName: string, { executable = moduleName, cwd = process.cwd() } = {}): string => {
     let whichPath = which.sync(executable, { nothrow: true });
 
@@ -46,6 +58,10 @@ const resolveBin = (moduleName: string, { executable = moduleName, cwd = process
     }
 };
 
+/**
+ * Wraps a ChildProcess in a Promise
+ * @param childProcess ChildProcess to wrap in a Promise
+ */
 const spawnProcessPromise = (childProcess: ChildProcess): Promise<number> => {
     return new Promise((res, rej) => {
         childProcess.addListener("close", res);
@@ -53,24 +69,43 @@ const spawnProcessPromise = (childProcess: ChildProcess): Promise<number> => {
     });
 };
 
-const hasFile = (fileName: string) => {
+/**
+ * Checks if a file exists in package root
+ * @param fileName Name of file to check if exists
+ */
+const hasFile = (fileName: string): boolean => {
     return fs.existsSync(fromRoot(fileName));
 };
 
+/**
+ * Checks if one ore more files exists a list of file names
+ * @param fileNames Array of file names to check if exists
+ */
 const hasOneOfFiles = (fileNames: string[]) => {
     return fileNames.some((fileName) => {
         return hasFile(fileName);
     });
 };
 
-const getPackage = (): object => {
+/**
+ * Fetches the root package
+ */
+const getPackage = (): object & Package => {
     return pkg;
 };
 
+/**
+ * Checks if a property exists on the root package
+ * @param attribute Property to check if exists
+ */
 const hasPackageProperty = (attribute: string): boolean => {
     return Object.keys(pkg).includes(attribute);
 };
 
+/**
+ * Logs message if DEBUG is set in the environment variables
+ * @param messages Messages to be logged
+ */
 const LOG = (...messages: Array<string | object>): void => {
     if (process.env.DEBUG) {
         console.log(messages);
