@@ -80,7 +80,6 @@ const lintJavaScript = async (args: string[]) => {
 };
 
 export const lintScript = async (args: string[] = [], lintArgs: ILintCommand) => {
-    // LOG("Called lintScript with args", lintArgs);
     const spinner = ora();
 
     const shouldLintTS = shouldLint(lintArgs, ["ts", "typescript"]);
