@@ -106,9 +106,9 @@ const hasPackageProperty = (attribute: string): boolean => {
  * Logs message if DEBUG is set in the environment variables
  * @param messages Messages to be logged
  */
-const LOG = (...messages: Array<string | object>): void => {
+const LOG = (...messages: Array<string | object | undefined>): void => {
     if (process.env.DEBUG) {
-        console.log(messages);
+        console.log("[pkk-scripts]", ...messages);
     }
 };
 
