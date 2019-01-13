@@ -15,9 +15,11 @@ commander
     .command("test")
     .alias("t")
     .description("Runs project tests")
-    .action(async () => {
-        console.info("Not implemented yet");
-
+    .allowUnknownOption()
+    .action(async (testArgs) => {
+        await import("./scripts/test").then((lintModule) => {
+            lintModule.testScript(commandArgs, testArgs);
+        });
     });
 
 commander
