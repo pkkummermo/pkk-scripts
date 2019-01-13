@@ -1,6 +1,6 @@
 {
   "name": "@pkkummermo/pkk-scripts",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Boostrapper for projects",
   "main": "dist/index.js",
   "bin": {
