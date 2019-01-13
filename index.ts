@@ -25,10 +25,12 @@ commander
     .alias("l")
     .description("Lints project files.")
     .option("-f, --fix", "Fix lint errors")
+    .option("--exclude-lint <languages>", "Exclude linting for specific languages")
+    .option("--include-lint <languages>", "Include linting only for given languages")
     .allowUnknownOption()
-    .action(async () => {
+    .action(async (lintArgs) => {
         await import("./scripts/lint").then((lintModule) => {
-            lintModule.lintScript(commandArgs);
+            lintModule.lintScript(commandArgs, lintArgs);
         });
     });
 

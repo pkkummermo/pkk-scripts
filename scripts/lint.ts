@@ -1,3 +1,4 @@
+import { Command } from "commander";
 import spawn from "cross-spawn";
 import glob from "glob";
 import ora from "ora";
@@ -8,6 +9,12 @@ const globPromise = util.promisify(glob);
 import { hasOneOfFiles, hasPackageProperty, LOG, resolveBin, spawnProcessPromise } from "../util";
 import { ES_LINT_VARS } from "./linters/eslint";
 import { TS_LINT_VARS } from "./linters/tslint";
+
+interface ILintCommand extends Command {
+    excludeLint?: string;
+    includeLint?: string;
+    fix?: boolean;
+}
 
 const lintTypeScript = async (args: string[]) => {
     const hasTSLintConfig = hasOneOfFiles(TS_LINT_VARS.CONFIG_FILES);
@@ -72,27 +79,81 @@ const lintJavaScript = async (args: string[]) => {
     });
 };
 
-export const lintScript = async (args: string[] = []) => {
-    LOG("Called lintScript with args", args);
+export const lintScript = async (args: string[] = [], lintArgs: ILintCommand) => {
+    // LOG("Called lintScript with args", lintArgs);
     const spinner = ora();
 
-    spinner.start("Linting TS");
-    try {
-        await lintTypeScript(args);
-        spinner.succeed();
-    } catch (error) {
-        spinner.text = `Error when running TSLint:\n${error}`;
-        spinner.fail();
+    const shouldLintTS = shouldLint(lintArgs, ["ts", "typescript"]);
+    const shouldLintJS = shouldLint(lintArgs, ["js", "javascript"]);
+
+    LOG("Sanitized args", santitizeArguments(args));
+
+    if (shouldLintTS) {
+        spinner.start("Linting TS");
+        try {
+            await lintTypeScript(santitizeArguments(args));
+            spinner.succeed();
+        } catch (error) {
+            spinner.text = `Error when running TSLint:\n${error}`;
+            spinner.fail();
+        }
+
     }
 
-    spinner.start("Linting JS");
-    try {
-        await lintJavaScript(args);
-        spinner.succeed();
-    } catch (error) {
-        spinner.text = `ESLint:\n${error}`;
+    if (shouldLintJS) {
+        try {
+            spinner.start("Linting JS");
+            await lintJavaScript(santitizeArguments(args));
+            spinner.succeed();
+        } catch (error) {
+            spinner.text = `ESLint:\n${error}`;
+            spinner.fail();
+        }
+    }
+
+    if (!shouldLintJS && !shouldLintTS) {
+        spinner.text = "No files were set up for linting. This might be a configuration issue";
         spinner.fail();
     }
 
     spinner.stop();
+};
+
+const santitizeArguments = (args: string[]): string[] => {
+    const santitizedArgs: string[] = [...args];
+
+    const excludeIdx = santitizedArgs.indexOf("--exclude-lint");
+    if (excludeIdx !== -1) {
+        LOG("Found exclude lint arg. Santitizing.");
+        santitizedArgs.splice(excludeIdx, 2);
+    }
+
+    const includeIdx = santitizedArgs.indexOf("--include-lint");
+    if (includeIdx !== -1) {
+        LOG("Found include lint arg. Santitizing.");
+        santitizedArgs.splice(includeIdx, 2);
+    }
+
+    return santitizedArgs;
+};
+
+const shouldLint = (lintCommand: ILintCommand, languageIndentifiers: string[]): boolean => {
+    if (lintCommand.includeLint) {
+        if (lintCommand.includeLint.split(",").some((includeLanguage) => languageIndentifiers.some((language) => language === includeLanguage))) {
+            LOG(`Included in lint due to match in [${languageIndentifiers.join("|")}]`);
+            return true;
+        } else {
+            LOG(`Excluded in lint due to no match in [${languageIndentifiers.join("|")}]`);
+            return false;
+        }
+    }
+
+    if (lintCommand.excludeLint) {
+        if (lintCommand.excludeLint.split(",").some((excludeLanguage) => languageIndentifiers.some((language) => language === excludeLanguage))) {
+            LOG(`Excluded from lint due to match in [${languageIndentifiers.join("|")}]`);
+            return false;
+        }
+    }
+
+    return true;
 };
