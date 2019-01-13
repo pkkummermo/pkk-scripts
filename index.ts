@@ -16,6 +16,7 @@ commander
     .alias("t")
     .description("Runs project tests")
     .allowUnknownOption()
+    .option("-w, --watch", "Run in watch mode")
     .action(async (testArgs) => {
         await import("./scripts/test").then((lintModule) => {
             lintModule.testScript(commandArgs, testArgs);
