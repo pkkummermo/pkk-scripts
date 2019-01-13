@@ -6,7 +6,7 @@ import util from "util";
 
 const globPromise = util.promisify(glob);
 
-import { hasOneOfFiles, hasPackageProperty, LOG, resolveBin, spawnProcessPromise } from "../util";
+import { hasOneOfFiles, hasPackageProperty, LOG, purgeArgument, resolveBin, spawnProcessPromise } from "../util";
 import { ES_LINT_VARS } from "./linters/eslint";
 import { TS_LINT_VARS } from "./linters/tslint";
 
@@ -121,17 +121,8 @@ export const lintScript = async (args: string[] = [], lintArgs: ILintCommand) =>
 const santitizeArguments = (args: string[]): string[] => {
     const santitizedArgs: string[] = [...args];
 
-    const excludeIdx = santitizedArgs.indexOf("--exclude-lint");
-    if (excludeIdx !== -1) {
-        LOG("Found exclude lint arg. Santitizing.");
-        santitizedArgs.splice(excludeIdx, 2);
-    }
-
-    const includeIdx = santitizedArgs.indexOf("--include-lint");
-    if (includeIdx !== -1) {
-        LOG("Found include lint arg. Santitizing.");
-        santitizedArgs.splice(includeIdx, 2);
-    }
+    purgeArgument(santitizedArgs, "--exclude-lint", 2);
+    purgeArgument(santitizedArgs, "--include-lint", 2);
 
     return santitizedArgs;
 };

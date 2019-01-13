@@ -112,6 +112,21 @@ const LOG = (...messages: Array<string | object | undefined>): void => {
     }
 };
 
+/**
+ * Modifies argument list by removing given argument if the argument exist
+ * @param argumentList Argument list
+ * @param argument Argument to be purged
+ * @param numberOfArgs Number of arguments including first argument to purge
+ */
+const purgeArgument = (argumentList: string[], argument: string, numberOfArgs: number = 1) => {
+    const argIndex = argumentList.indexOf(argument);
+    if (argIndex !== -1) {
+        LOG(`Found argument ${argument} to purge. Santitizing ${numberOfArgs} arguments.`);
+        argumentList.splice(argIndex, numberOfArgs);
+    }
+    return argumentList;
+};
+
 export {
     appDirectory,
     fromRoot,
@@ -120,6 +135,7 @@ export {
     hasOneOfFiles,
     hasPackageProperty,
     LOG,
+    purgeArgument,
     resolveBin,
     resolvePKKScripts,
     spawnProcessPromise,
