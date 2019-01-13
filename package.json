@@ -10,7 +10,7 @@
     "dist"
   ],
   "scripts": {
-    "prepublish": "npm start build",
+    "prepublish": "npm run build",
     "prebuild": "rimraf dist",
     "build": "tsc && cp -r scripts/linters/configs dist/scripts/linters/.",
     "start": "ts-node index.ts --",
