@@ -20,12 +20,15 @@ const lintTypeScript = async (args: string[]) => {
     const hasTSLintConfig = hasOneOfFiles(TS_LINT_VARS.CONFIG_FILES);
     const tsLintConfig = hasTSLintConfig ? [] : TS_LINT_VARS.FALLBACK_CONFIG;
 
-    LOG("Chosen tslintconfig", hasTSLintConfig ? "Using project local" : tsLintConfig);
-    LOG("Running TSLint with", [...TS_LINT_VARS.DEFAULT_ARGS, ...tsLintConfig, ...args]);
+    LOG("tslintconfig:", hasTSLintConfig ? "Using project local" : tsLintConfig);
+
+    const tslintArgs = [...TS_LINT_VARS.DEFAULT_ARGS, ...tsLintConfig, ...args];
+
+    LOG("Running TSLint with args:", tslintArgs);
 
     const exitCode = await spawnProcessPromise(spawn(
         resolveBin("tslint"),
-        [...TS_LINT_VARS.DEFAULT_ARGS, ...tsLintConfig, ...args],
+        tslintArgs,
         { stdio: "inherit" },
     ));
     if (exitCode !== 0) {
@@ -63,11 +66,14 @@ const lintJavaScript = async (args: string[]) => {
     }
 
     LOG("Chosen eslintconfig", esLintConfig);
-    LOG("Running ESLint with", [...ES_LINT_VARS.DEFAULT_ARGS, ...esLintConfig, ...args]);
+
+    const eslintArgs = [...ES_LINT_VARS.DEFAULT_ARGS, ...esLintConfig, ...args];
+
+    LOG("Running ESLint with args:", eslintArgs);
 
     await spawnProcessPromise(spawn(
         resolveBin("eslint"),
-        [...ES_LINT_VARS.DEFAULT_ARGS, ...esLintConfig, ...args],
+        eslintArgs,
         { stdio: "inherit" },
     )).then((res) => {
         if (res === ES_LINT_VARS.RETURN_CODES.GENERIC_ERROR_V5) {
