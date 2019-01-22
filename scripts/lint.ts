@@ -81,8 +81,9 @@ const lintJavaScript = async (args: string[]) => {
 
 export const lintScript = async (args: string[] = [], lintArgs: ILintCommand) => {
     const spinner = ora();
+    const hasTSConfig = !hasOneOfFiles(["tsconfig.json"]);
 
-    const shouldLintTS = shouldLint(lintArgs, ["ts", "typescript"]);
+    const shouldLintTS = shouldLint(lintArgs, ["ts", "typescript"]) && hasTSConfig;
     const shouldLintJS = shouldLint(lintArgs, ["js", "javascript"]);
 
     LOG("Sanitized args", santitizeArguments(args));
