@@ -6,7 +6,14 @@ import util from "util";
 
 const globPromise = util.promisify(glob);
 
-import { hasOneOfFiles, hasPackageProperty, LOG, purgeArgument, resolveBin, spawnProcessPromise } from "../util";
+import {
+    hasOneOfFiles,
+    hasPackageProperty,
+    LOG,
+    purgeArgument,
+    resolveBin,
+    spawnProcessPromise,
+} from "../util";
 import { ES_LINT_VARS } from "./linters/eslint";
 import { TS_LINT_VARS } from "./linters/tslint";
 
@@ -26,18 +33,17 @@ const lintTypeScript = async (args: string[]) => {
 
     LOG("Running TSLint with args:", tslintArgs);
 
-    const exitCode = await spawnProcessPromise(spawn(
-        resolveBin("tslint"),
-        tslintArgs,
-        { stdio: "inherit" },
-    ));
+    const exitCode = await spawnProcessPromise(
+        spawn(resolveBin("tslint"), tslintArgs, { stdio: "inherit" }),
+    );
     if (exitCode !== 0) {
         throw new Error(`There were lint errors. Exit code: ${exitCode}`);
     }
 };
 
 const lintJavaScript = async (args: string[]) => {
-    const hasESLintConfig = hasOneOfFiles(ES_LINT_VARS.CONFIG_FILES) ||
+    const hasESLintConfig =
+        hasOneOfFiles(ES_LINT_VARS.CONFIG_FILES) ||
         hasPackageProperty(ES_LINT_VARS.PACKAGE_CONFIG_PROP) ||
         hasPackageProperty("eslintIgnore");
     const esLintConfig = hasESLintConfig ? [] : ES_LINT_VARS.FALLBACK_CONFIG;
@@ -59,7 +65,9 @@ const lintJavaScript = async (args: string[]) => {
      * TODO: Use ESLint CLIEngine to bypass issue
      */
     if (!hasESLintConfig) {
-        const globRes = await globPromise(ES_LINT_VARS.DEFAULT_ARGS[0], { ignore: ["node_modules/**/*"] });
+        const globRes = await globPromise(ES_LINT_VARS.DEFAULT_ARGS[0], {
+            ignore: ["node_modules/**/*"],
+        });
         if (globRes.length === 0) {
             return;
         }
@@ -71,18 +79,16 @@ const lintJavaScript = async (args: string[]) => {
 
     LOG("Running ESLint with args:", eslintArgs);
 
-    await spawnProcessPromise(spawn(
-        resolveBin("eslint"),
-        eslintArgs,
-        { stdio: "inherit" },
-    )).then((res) => {
-        if (res === ES_LINT_VARS.RETURN_CODES.GENERIC_ERROR_V5) {
-            throw new Error("Something went wrong when trying to lint your files");
-        }
-        if (res === ES_LINT_VARS.RETURN_CODES.LINT_ERROR_V5) {
-            throw new Error("Found lint errors");
-        }
-    });
+    await spawnProcessPromise(spawn(resolveBin("eslint"), eslintArgs, { stdio: "inherit" })).then(
+        (res) => {
+            if (res === ES_LINT_VARS.RETURN_CODES.GENERIC_ERROR_V5) {
+                throw new Error("Something went wrong when trying to lint your files");
+            }
+            if (res === ES_LINT_VARS.RETURN_CODES.LINT_ERROR_V5) {
+                throw new Error("Found lint errors");
+            }
+        },
+    );
 };
 
 export const lintScript = async (args: string[] = [], lintArgs: ILintCommand) => {
@@ -103,7 +109,6 @@ export const lintScript = async (args: string[] = [], lintArgs: ILintCommand) =>
             spinner.text = `Error when running TSLint:\n${error}`;
             spinner.fail();
         }
-
     }
 
     if (shouldLintJS) {
@@ -136,7 +141,13 @@ const santitizeArguments = (args: string[]): string[] => {
 
 const shouldLint = (lintCommand: ILintCommand, languageIndentifiers: string[]): boolean => {
     if (lintCommand.includeLint) {
-        if (lintCommand.includeLint.split(",").some((includeLanguage) => languageIndentifiers.some((language) => language === includeLanguage))) {
+        if (
+            lintCommand.includeLint
+                .split(",")
+                .some((includeLanguage) =>
+                    languageIndentifiers.some((language) => language === includeLanguage),
+                )
+        ) {
             LOG(`Included in lint due to match in [${languageIndentifiers.join("|")}]`);
             return true;
         } else {
@@ -146,7 +157,13 @@ const shouldLint = (lintCommand: ILintCommand, languageIndentifiers: string[]): 
     }
 
     if (lintCommand.excludeLint) {
-        if (lintCommand.excludeLint.split(",").some((excludeLanguage) => languageIndentifiers.some((language) => language === excludeLanguage))) {
+        if (
+            lintCommand.excludeLint
+                .split(",")
+                .some((excludeLanguage) =>
+                    languageIndentifiers.some((language) => language === excludeLanguage),
+                )
+        ) {
             LOG(`Excluded from lint due to match in [${languageIndentifiers.join("|")}]`);
             return false;
         }

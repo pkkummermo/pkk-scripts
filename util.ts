@@ -33,7 +33,10 @@ const fromRoot = (pathToRelativeToRoot: string) => {
  * @param moduleName Name of module
  * @param param1 Optional extended configuration of module
  */
-const resolveBin = (moduleName: string, { executable = moduleName, cwd = process.cwd() } = {}): string => {
+const resolveBin = (
+    moduleName: string,
+    { executable = moduleName, cwd = process.cwd() } = {},
+): string => {
     let whichPath = which.sync(executable, { nothrow: true });
 
     if (typeof whichPath === "string") {

@@ -3,11 +3,13 @@
 import commander from "commander";
 import { LOG } from "./util";
 
+// tslint:disable-next-line:no-var-requires
+const { version } = require("./package.json");
 LOG("Process args", process.argv);
 const commandArgs = process.argv.slice(3);
 
 commander
-    .version("0.1.0")
+    .version(version)
     .name("pkk-scripts")
     .description("pkk-scripts - bootstrapper for projects");
 
@@ -19,21 +21,23 @@ commander
     .option("-w, --watch", "Run in watch mode")
     .action(async (testArgs) => {
         await import("./scripts/test").then((lintModule) => {
-            lintModule.testScript(commandArgs, testArgs);
+            return lintModule.testScript(commandArgs, testArgs);
         });
     });
 
 commander
     .command("lint")
     .alias("l")
-    .description("Lints project files.")
+    .description(
+        "Lints project files. If no options is provided it will try to lint everything possible",
+    )
     .option("-f, --fix", "Fix lint errors")
     .option("--exclude-lint <languages>", "Exclude linting for specific languages")
     .option("--include-lint <languages>", "Include linting only for given languages")
     .allowUnknownOption()
     .action(async (lintArgs) => {
         await import("./scripts/lint").then((lintModule) => {
-            lintModule.lintScript(commandArgs, lintArgs);
+            return lintModule.lintScript(commandArgs, lintArgs);
         });
     });
 
@@ -44,7 +48,7 @@ commander
     .option("-d, --dryrun", "Do not write fixes to files")
     .action(async function(files, formatArgs, ...additionalFiles) {
         const filesInput = !files ? [] : [files, ...additionalFiles];
-        await import("./scripts/format").then(formatModule => {
+        await import("./scripts/format").then((formatModule) => {
             return formatModule.formatFiles(filesInput, formatArgs);
         });
     });

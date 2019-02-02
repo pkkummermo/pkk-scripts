@@ -13,7 +13,8 @@ interface ITestCommand extends Command {
 }
 
 const testJest = async (args: string[], testCommand: ITestCommand) => {
-    const hasJestConfig = hasOneOfFiles(JEST_VARS.CONFIG_FILES) || hasPackageProperty(JEST_VARS.PACKAGE_CONFIG_PROP);
+    const hasJestConfig =
+        hasOneOfFiles(JEST_VARS.CONFIG_FILES) || hasPackageProperty(JEST_VARS.PACKAGE_CONFIG_PROP);
     const jestConfig = hasJestConfig ? [] : JEST_VARS.FALLBACK_CONFIG;
 
     const fallbackConfig = require("./testers/configs/jest.config");
@@ -23,7 +24,9 @@ const testJest = async (args: string[], testCommand: ITestCommand) => {
      * and we have no matches on default test globs
      */
     if (!hasJestConfig) {
-        const globRes = await globPromise(JEST_VARS.DEFAULT_TEST_FILE_PATTERN_GLOB, { ignore: ["node_modules/**/*"] });
+        const globRes = await globPromise(JEST_VARS.DEFAULT_TEST_FILE_PATTERN_GLOB, {
+            ignore: ["node_modules/**/*"],
+        });
         if (globRes.length === 0) {
             console.log(`No tests could be found with the default configuration.
 
@@ -46,15 +49,17 @@ Either add a custom config or use the default naming conventions for picking up 
      * Merging static and dynamic config (rootDir) to make up for relative config
      */
     const jestArguments = [
-        ...(hasJestConfig ?
-            [""] :
-            ["--config", JSON.stringify(
-                {
-                    ...fallbackConfig,
-                    ...{ rootDir: fromRoot(".") },
-                },
-            )]
-        ), ...args];
+        ...(hasJestConfig
+            ? [""]
+            : [
+                  "--config",
+                  JSON.stringify({
+                      ...fallbackConfig,
+                      ...{ rootDir: fromRoot(".") },
+                  }),
+              ]),
+        ...args,
+    ];
 
     LOG("Chose jest config", jestConfig);
     LOG("Running jest with", jestArguments);
