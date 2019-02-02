@@ -1,5 +1,5 @@
 {
-  "extends": "@telenorfrontend/tslint-config-telenor",
+  "extends": ["./scripts/linters/configs/tslint.json"],
   "rules": {
     "no-console": false
   }

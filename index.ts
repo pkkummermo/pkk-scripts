@@ -38,6 +38,18 @@ commander
     });
 
 commander
+    .command("format [files]")
+    .alias("f")
+    .description("Formats project files. If no files provided it will format the whole project")
+    .option("-d, --dryrun", "Do not write fixes to files")
+    .action(async function(files, formatArgs, ...additionalFiles) {
+        const filesInput = !files ? [] : [files, ...additionalFiles];
+        await import("./scripts/format").then(formatModule => {
+            return formatModule.formatFiles(filesInput, formatArgs);
+        });
+    });
+
+commander
     .command("server")
     .alias("s")
     .description("Starts development server")
