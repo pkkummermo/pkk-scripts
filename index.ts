@@ -3,13 +3,11 @@
 import commander from "commander";
 import { LOG } from "./util";
 
-// tslint:disable-next-line:no-var-requires
-const { version } = require("./package.json");
 LOG("Process args", process.argv);
 const commandArgs = process.argv.slice(3);
 
 commander
-    .version(version)
+    .version("0.1.8")
     .name("pkk-scripts")
     .description("pkk-scripts - bootstrapper for projects");
 
