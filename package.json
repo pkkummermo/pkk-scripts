@@ -10,9 +10,9 @@
     "dist"
   ],
   "scripts": {
-    "prepublish": "npm run build",
+    "prepare": "npm run build",
     "prebuild": "rimraf dist",
-    "build": "tsc && cp -r scripts/linters/configs dist/scripts/linters/. && cp -r scripts/testers/configs dist/scripts/testers/. && cp -r scripts/formatters/configs dist/scripts/formatters/. && cp package.json dist/.",
+    "build": "tsc && cp -r scripts/linters/configs dist/scripts/linters/. && cp -r scripts/testers/configs dist/scripts/testers/. && cp -r scripts/formatters/configs dist/scripts/formatters/.",
     "start": "ts-node index.ts --",
     "test": "npm run test:lint",
     "test:lint": "ts-node index.ts lint --include-lint ts"
