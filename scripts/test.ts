@@ -13,11 +13,24 @@ interface ITestCommand extends Command {
 }
 
 const testJest = async (args: string[], testCommand: ITestCommand) => {
+    const fallbackConfig = require("./testers/configs/jest.config");
     const hasJestConfig =
         hasOneOfFiles(JEST_VARS.CONFIG_FILES) || hasPackageProperty(JEST_VARS.PACKAGE_CONFIG_PROP);
-    const jestConfig = hasJestConfig ? [] : JEST_VARS.FALLBACK_CONFIG;
+    let jestConfig = [""];
 
-    const fallbackConfig = require("./testers/configs/jest.config");
+    if (hasJestConfig) {
+        if (hasOneOfFiles([JEST_VARS.CONFIG_FILE_JSON])) {
+            jestConfig = ["-c", JEST_VARS.CONFIG_FILE_JSON];
+        }
+    } else {
+        jestConfig = [
+            "--config",
+            JSON.stringify({
+                ...fallbackConfig,
+                ...{ rootDir: fromRoot(".") },
+            }),
+        ];
+    }
 
     /**
      * Return instead of tossing an error if we do not have a specific config file
@@ -48,20 +61,8 @@ Either add a custom config or use the default naming conventions for picking up 
     /**
      * Merging static and dynamic config (rootDir) to make up for relative config
      */
-    const jestArguments = [
-        ...(hasJestConfig
-            ? [""]
-            : [
-                  "--config",
-                  JSON.stringify({
-                      ...fallbackConfig,
-                      ...{ rootDir: fromRoot(".") },
-                  }),
-              ]),
-        ...args,
-    ];
+    const jestArguments = [...jestConfig, ...args];
 
-    LOG("Chose jest config", jestConfig);
     LOG("Running jest with", jestArguments);
 
     await jest.run(jestArguments);
