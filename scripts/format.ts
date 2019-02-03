@@ -1,4 +1,4 @@
-import { spawn } from "child_process";
+import spawn from "cross-spawn";
 import { hasOneOfFiles, hasPackageProperty, LOG, resolveBin, spawnProcessPromise } from "../util";
 import { PRETTIER_VARS } from "./formatters/prettier";
 
