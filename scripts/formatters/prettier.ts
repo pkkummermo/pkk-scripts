@@ -2,7 +2,7 @@ import path from "path";
 
 export const PRETTIER_VARS = {
     DEFAULT_EXCLUDES: ["node_modules/**"],
-    DEFAULT_ARGS: ["**/*.+(js|json|less|css|ts|tsx|md)"],
+    DEFAULT_ARGS: ["**/*.+(js|json|less|scss|css|ts|tsx|md)"],
     FALLBACK_CONFIG: [
         "--config",
         path.join(__dirname, "./configs/prettier.config.js").replace(process.cwd(), "."),
