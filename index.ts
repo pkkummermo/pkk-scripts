@@ -7,7 +7,7 @@ LOG("Process args", process.argv);
 const commandArgs = process.argv.slice(3);
 
 commander
-    .version("0.1.9")
+    .version("0.1.10")
     .name("pkk-scripts")
     .description("pkk-scripts - bootstrapper for projects");
 
