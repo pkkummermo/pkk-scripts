@@ -1,12 +1,12 @@
 import { ChildProcess } from "child_process";
 import fs from "fs";
 import path from "path";
-import readPkgUp, { Package } from "read-pkg-up";
+import readPkgUp, { NormalizedReadResult, PackageJson } from "read-pkg-up";
 import which from "which";
 
-const { pkg, path: pkgPath } = readPkgUp.sync({
+const { package: pkg, path: pkgPath } = readPkgUp.sync({
     cwd: fs.realpathSync(process.cwd()),
-});
+}) as NormalizedReadResult;
 
 const appDirectory = path.dirname(pkgPath);
 
@@ -93,7 +93,7 @@ const hasOneOfFiles = (fileNames: string[]) => {
 /**
  * Fetches the root package
  */
-const getPackage = (): object & Package => {
+const getPackage = (): object & PackageJson => {
     return pkg;
 };
 
