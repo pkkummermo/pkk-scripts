@@ -23,5 +23,7 @@ export const formatFiles = async (args: string[] = [], formatArgs: IFormatComman
 
     LOG("Prettier args", prettierArgs);
 
-    await spawnProcessPromise(spawn(resolveBin("prettier"), prettierArgs, { stdio: "inherit" }));
+    await spawnProcessPromise(
+        spawn(await resolveBin("prettier"), prettierArgs, { stdio: "inherit" }),
+    );
 };

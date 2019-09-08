@@ -2,7 +2,7 @@ import path from "path";
 
 export const ES_LINT_VARS = {
     DEFAULT_EXCLUDES: ["node_modules/**"],
-    DEFAULT_ARGS: ["**/*.js"],
+    DEFAULT_ARGS: ["**/*.js", "**/*.ts"],
     CONFIG_FILES: [".eslintrc", ".eslintrc.js", ".eslintrc.json"],
     FALLBACK_CONFIG: [
         "-c",

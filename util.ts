@@ -33,10 +33,10 @@ const fromRoot = (pathToRelativeToRoot: string) => {
  * @param moduleName Name of module
  * @param param1 Optional extended configuration of module
  */
-const resolveBin = (
+const resolveBin = async (
     moduleName: string,
     { executable = moduleName, cwd = process.cwd() } = {},
-): string => {
+): Promise<string> => {
     let whichPath = which.sync(executable, { nothrow: true });
 
     if (typeof whichPath === "string") {
@@ -46,7 +46,7 @@ const resolveBin = (
     try {
         const modPkgPath = require.resolve(`${moduleName}/package.json`);
         const modPkgDir = path.dirname(modPkgPath);
-        const { bin } = require(modPkgPath);
+        const { bin } = await import(modPkgPath);
         const binPath = typeof bin === "string" ? bin : bin[executable];
         const fullPathToBin = path.join(modPkgDir, binPath);
         if (fullPathToBin === whichPath) {
