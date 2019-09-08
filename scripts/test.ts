@@ -1,9 +1,9 @@
 import { Command } from "commander";
 import glob = require("glob");
-// @ts-ignore-line
 import jest from "jest";
 import util from "util";
 import { fromRoot, hasOneOfFiles, hasPackageProperty, LOG, purgeArgument } from "../util";
+import * as fallbackConfig from "./testers/configs/jest.config";
 import { JEST_VARS } from "./testers/jest";
 
 const globPromise = util.promisify(glob);
@@ -13,7 +13,7 @@ interface ITestCommand extends Command {
 }
 
 const testJest = async (args: string[], testCommand: ITestCommand) => {
-    const fallbackConfig = require("./testers/configs/jest.config");
+    // const fallbackConfig = require("./testers/configs/jest.config");
     const hasJestConfig =
         hasOneOfFiles(JEST_VARS.CONFIG_FILES) || hasPackageProperty(JEST_VARS.PACKAGE_CONFIG_PROP);
     let jestConfig = [""];
