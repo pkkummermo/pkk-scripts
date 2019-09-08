@@ -11,7 +11,6 @@ export const ES_LINT_VARS = {
     PACKAGE_CONFIG_PROP: "eslintConfig",
     RETURN_CODES: {
         OK: 0,
-        GENERIC_ERROR_V4: 1,
         LINT_ERROR_V5: 1,
         GENERIC_ERROR_V5: 2,
     },
